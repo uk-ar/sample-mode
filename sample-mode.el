@@ -63,33 +63,15 @@
 
 (defvar sample-indent-basic 2)
 
-;; (defvar sample-smie-grammar
-;;   (smie-prec2->grammar
-;;    (smie-bnf->prec2
-;;     '((id)
-;;       (inst ("begin" insts "end")
-;;             ;;(block )
-;;             ("{" inst "}")
-;;             ("if" exp "then" inst "else" inst "end")
-;;             ("if" exp "then" inst "else" inst "}")
-;;             ("if" inst "else" inst "}")
-;;             (id ":=" exp)
-;;             (exp))
-;;       (insts (insts ";" insts) (inst))
-;;       (exp (exp "+" exp)
-;;            (exp "" exp)
-;;            ("(" exps ")"))
-;;       (exps (exps "," exps) (exp)))
-;;     '((assoc ";"))
-;;     '((assoc ","))
-;;     '((assoc "+") (assoc "")))))
-
 (defvar sample-smie-grammar
   (smie-prec2->grammar
    (smie-bnf->prec2
     '((id)
       (inst ("begin" insts "end")
-            ("if" exp "then" inst "else" inst)
+            ("if" exp "then" inst "else" inst "end")
+            ;;("if" exp "then" inst "else" inst "}")
+            ("{" inst "}")
+            ("if" inst "else" inst "}")
             (id ":=" exp)
             (exp))
       (insts (insts ";" insts) (inst))
@@ -101,25 +83,6 @@
     '((assoc ","))
     '((assoc "+") (assoc "*")))))
 
-;; (defun sample-smie-rules (kind token)
-;;   (pcase (cons kind token)
-;;     (`(:elem . basic) sample-indent-basic)
-;;     (`(,_ . ",") (smie-rule-separator kind))
-;;     (`(:after . ":=") sample-indent-basic)
-;;     (`(:before . ,(or "begin""(" "{"))
-;;      (if (smie-rule-hanging-p) (smie-rule-parent)))
-;;     ;;((:after . "if") '(column . 0))
-;;     (`(:close-all . "}") sample-indent-basic)
-;;     ;;((:after . "if") '(column . 0))
-;;     (`(:after . ,(or"end" ")""}")) 0)
-;;     (`(:before . "if")
-;;      (and (not (smie-rule-bolp))
-;;           (smie-rule-prev-p "else")
-;;           ;; (save-excursion
-;;           ;; (sample-smie-backward-token);;beginning of else
-;;           ;; (cons 'column (current-column)))
-;;           (smie-rule-parent)
-;;           ))))
 (defun sample-smie-rules (kind token)
   (pcase (cons kind token)
     (`(:elem . basic) sample-indent-basic)

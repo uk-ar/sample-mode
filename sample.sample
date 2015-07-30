@@ -7,10 +7,10 @@ if x {
   if x {
       dosomething(x);
     } else if x {
+      dosomething(x);
+    } else {
     dosomething(x);
-  } else {
-  dosomething(x);
-}
+  }
 }
 
 if x then {
