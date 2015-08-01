@@ -1,22 +1,22 @@
-if x {
+  if x {
     dosomething(x);
   } else if x {
     dosomething(x);
   } else {
-  dosomething(x);
-  if x {
+    dosomething(x);
+    if x {
       dosomething(x);
     } else if x {
       dosomething(x);
     } else {
-    dosomething(x);
+      dosomething(x);
+    }
   }
-}
 
 if x then {
   dosomething(x);
 } else if x then {
-  dosomething(x);
+     dosomething(x);
 } else {
   dosomething(x);
 }
