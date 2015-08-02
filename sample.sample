@@ -1,4 +1,11 @@
-  if x {
+if x {
+  dosomething(x);
+}
+if x {
+  dosomething(x);
+}
+
+if x {
     dosomething(x);
   } else if x {
     dosomething(x);

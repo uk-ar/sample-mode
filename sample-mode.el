@@ -87,6 +87,7 @@
            ("{" inst "}")
            ;;("if" inst "}")
            ("if" if-body "}")
+           ("class" exp "}")
            ;; ("if" inst "else" inst "}")
            ;; ("if" inst "elseif" inst "}")
            ;; ("if" inst "elseif" inst "else" inst "}")
@@ -126,6 +127,7 @@
      (cond
       ;;(smie-rule-hanging-p) (smie-rule-parent)
       ;;((smie-rule-bolp) 0)
+      ((smie-rule-bolp) 0)
       ((and (not (smie-rule-bolp))
             (smie-rule-prev-p "else"))
        (smie-rule-parent))
@@ -148,3 +150,5 @@
      (global-electric-formatter-mode -1))
 
 ;;(and (sample-mode) (indent-buffer))
+(provide 'sample-mode)
+;;; sample-mode.el ends here
