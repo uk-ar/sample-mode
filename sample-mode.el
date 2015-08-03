@@ -14,7 +14,7 @@
   "Syntax table for `sample-mode'.")
 
 (defvar sample-keywords-regexp
-  (regexp-opt '("+" "*" "," ";" ">" ">=" "<" "<=" ":=" "=" "if" "then" "begin" "end")))
+  (regexp-opt '("+" "*" "," ";" ">" ">=" "<" "<=" ":=" "=" "if" "then" "begin" "end" "class" ":")))
 
 (defvar sample-font-lock-keywords
   `(,sample-keywords-regexp
@@ -73,29 +73,32 @@
   (smie-prec2->grammar
    (smie-bnf->prec2
     '((id)
+      (ids (ids "," ids) (id))
+      (class-id (id ":" ids) (id))
       (inst ("begin" insts "end")
             ;;("if" exp "then" inst "else" inst "end")
             ;;("if" exp "then" inst "else" inst "}")
             ;; ("if" inst "else" inst "}")
             ;;("else" inst "}")
             (id ":=" exp)
+            ("{" inst "}")
+            ("if" if-body "}")
+            ("class" class-id exp "}")
             (exp))
       (insts (insts ";" insts) (inst))
       (exp (exp "+" exp)
            (exp "*" exp)
+           ;;(exp "," exp)
            ("(" exp ")")
-           ("{" inst "}")
            ;;("if" inst "}")
-           ("if" if-body "}")
-           ("class" exp "}")
            ;; ("if" inst "else" inst "}")
            ;; ("if" inst "elseif" inst "}")
            ;; ("if" inst "elseif" inst "else" inst "}")
            )
       ;;(exps (exps "," exps) (exp))
 
-      ;;(itheni (insts) (exp "then" insts))
-      ;;(ielsei (itheni) (itheni "else" insts))
+      ;; (itheni (insts) (exp "then" insts))
+      ;; (ielsei (itheni) (itheni "else" insts))
       ;; (if-body (ielsei) (if-body "elseif" if-body))
       ;;(else );;
       (if-body (inst) (if-body "else" if-body) (if-body "elseif" if-body))
@@ -120,9 +123,16 @@
     ;;(`(:close-all . "}") (smie-rule-parent))
     ;; (`(:after . "if") (smie-rule-parent))
     (`(:after . "if") 0)
+    (`(:after . "class") 0)
     ;;(`(:after . "{") (smie-rule-parent))
     ;;((smie-rule-hanging-p) (smie-rule-parent)))
     ;;   (if (smie-rule-parent-p "if") 0))
+    (`(:before . "class")
+     (cond
+      ((smie-rule-bolp) 0)
+      ))
+    (`(:before . ":")
+     (smie-rule-parent))
     (`(:before . "if")
      (cond
       ;;(smie-rule-hanging-p) (smie-rule-parent)

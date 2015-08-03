@@ -1,17 +1,23 @@
+class x: a, b, c; {
+  dosomething(x);
+}
+
 if x,
-    1
+   1;
 {
   dosomething(x);
 }
 
-if x {
-  dosomething(x);
-}
-if x {
+class x:
+a, b
+,c; {
   dosomething(x);
 }
 
-class x {
+if x {
+  dosomething(x);
+}
+if x {
   dosomething(x);
 }
 
