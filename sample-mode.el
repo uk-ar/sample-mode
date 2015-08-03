@@ -83,7 +83,7 @@
       (insts (insts ";" insts) (inst))
       (exp (exp "+" exp)
            (exp "*" exp)
-           ("(" exps ")")
+           ("(" exp ")")
            ("{" inst "}")
            ;;("if" inst "}")
            ("if" if-body "}")
@@ -92,7 +92,7 @@
            ;; ("if" inst "elseif" inst "}")
            ;; ("if" inst "elseif" inst "else" inst "}")
            )
-      (exps (exps "," exps) (exp))
+      ;;(exps (exps "," exps) (exp))
 
       ;;(itheni (insts) (exp "then" insts))
       ;;(ielsei (itheni) (itheni "else" insts))
@@ -113,7 +113,7 @@
     (`(:before . ,(or `"begin" `"(" `"{"))
      (cond
       ;;((smie-rule-parent-p "if") 0)
-      ;;((smie-rule-bolp) (smie-rule-parent))
+      ((smie-rule-bolp) (smie-rule-parent))
       ((smie-rule-hanging-p) (smie-rule-parent))
       ))
     (`(:after . "elseif") (smie-rule-parent))

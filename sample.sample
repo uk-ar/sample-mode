@@ -1,7 +1,17 @@
+if x,
+    1
+{
+  dosomething(x);
+}
+
 if x {
   dosomething(x);
 }
 if x {
+  dosomething(x);
+}
+
+class x {
   dosomething(x);
 }
 
