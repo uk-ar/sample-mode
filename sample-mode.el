@@ -14,7 +14,7 @@
   "Syntax table for `sample-mode'.")
 
 (defvar sample-keywords-regexp
-  (regexp-opt '("+" "*" "," ";" ">" ">=" "<" "<=" ":=" "=" "if" "then" "begin" "end" "class" ":")))
+  (regexp-opt '("+" "*" "," ";" ">" ">=" "<" "<=" ":=" "=" "if" "then" "begin" "end" "class" ":" "{" "}")))
 
 (defvar sample-font-lock-keywords
   `(,sample-keywords-regexp
@@ -81,9 +81,9 @@
             ;; ("if" inst "else" inst "}")
             ;;("else" inst "}")
             (id ":=" exp)
-            ("{" inst "}")
-            ("if" if-body "}")
-            ("class" class-id exp "}")
+            ;; ("{" inst "}")
+            ;; ("if" if-body "}")
+            ("class" insts "{" insts "}")
             (exp))
       (insts (insts ";" insts) (inst))
       (exp (exp "+" exp)
