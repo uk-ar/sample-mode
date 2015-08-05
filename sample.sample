@@ -1,93 +1,17 @@
-class x: a, b, c; {
-  dosomething(x);
-}
-
-if x,
-   1;
-{
-  dosomething(x);
-}
-
-class x:
-a, b
-,c; {
-  dosomething(x);
-}
-
-if x {
-  dosomething(x);
-}
-if x {
-  dosomething(x);
-}
-
-if x {
-    dosomething(x);
-  } else if x {
-    dosomething(x);
-  } else {
-    dosomething(x);
-    if x {
-      dosomething(x);
-    } else if x {
-      dosomething(x);
-    } else {
-      dosomething(x);
-    }
-  }
-
-if x then {
-  dosomething(x);
-} else if x then {
-     dosomething(x);
+if a {
+b
+} else if c {
+d
 } else {
-  dosomething(x);
+e
 }
 
-if x > 0 then begin
-  dosomething(x);
-end
-
-if x > 0 then begin
-  dosomething(x);
-end
-
-if x > 0 then
-  dosomething(x);
-else
-  dosomething(x);
-end
-
-if x > 0 then
-  dosomething(x);
-else if x then
-  dosomething(x);
-else
-  dosomething(x);
-end
-
-if x > 0 then {
-  dosomething(x);
-}
-
-
-if x > 0 then {
-  dosomething(x);
-  if x > 0 then {
-    dosomething(x);
-  }else{
-    a
-  }
-}
-
-if x > 0 then {
-  dosomething(x);
-}else{
+begin
   a
-}
+end
 
-if foo {
-
-  } else {
-
-}
+begin
+begin
+  e
+end
+end
