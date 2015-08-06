@@ -1,9 +1,9 @@
 if a {
-b
+  b
 } else if c {
-d
+  d
 } else {
-e
+  e
 }
 
 begin
