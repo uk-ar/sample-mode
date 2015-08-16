@@ -49,6 +49,11 @@
    ((looking-at "else if");;}[ \t\n]*
     (goto-char (match-end 0))
     "elseif")
+   ((looking-at "{")
+    (goto-char (match-end 0))
+    (if (looking-back "class [^{]+{")
+        "class-{"
+        "{"))
    ((looking-at "else")
     (goto-char (match-end 0))
     "else")
@@ -60,12 +65,19 @@
        (progn (skip-syntax-forward "w_")
               (point))))))
 
+;; (funcall smie-forward-token-function)
+;; (funcall smie-backward-token-function)
 (defun sample-smie-backward-token ()
   (forward-comment (- (point)))
   (cond
    ((looking-back "else if")
     (goto-char (match-beginning 0))
     "elseif")
+   ((looking-back "{")
+    (goto-char (match-beginning 0))
+    (if (looking-back "class [^{]+")
+        "class-{"
+      "{"))
    ((looking-back "else")
     (goto-char (match-beginning 0))
     "else")
@@ -119,7 +131,7 @@
       (if-body (itheni)
                (ielsei)
                (ielseifi "elseif" if-body))
-      (class-body (class-id "{" insts "}"))
+      (class-body (class-id "class-{" insts "}"))
       (inst ("begin" insts "end")
             ;;("if" exp "then" inst "else" inst "end")
             ;;("if" exp "{" inst "}elseif" inst "{" inst "}else{" inst "}")
@@ -130,19 +142,26 @@
             ;;("class" insts "{" insts "}")
             ;;("class" id "{" id "}")
             ;;("class" insts "class-{" insts "class-}")
+            (id "(" args ")");; funcall
             (exp))
+      (args (args "," args) (arg))
+      (arg (id) (id "{" inst "}"))
+      ;; conflict class foo, bar {class-body}
+      ;; conflict func(foo, bar {closure})
+
       (insts (insts ";" insts) (inst))
       (exp (exp "+" exp)
            (exp "*" exp)
-           ("(" exp ")")
+           ;;("(" exps ")")
            )
+      ;;(exps (exps "," exps) (exp))
       ;;(if-conditional (exp) (let-decl))
       ;; (if-body ("if" if-conditional "{" insts "}"))
       ;; (if-clause (if-body)
       ;;            (if-body "elseif" if-conditional "{" insts "}")
       ;;            (if-body "else" "{" insts "}"))
       )
-    ;;'((assoc "}elseif"))
+    '((assoc "elseif"))
     ;;'((assoc "}else{"))
     ;;'((assoc "}") (assoc "else"))
     ;;'((assoc "if") (assoc "else") (assoc "elseif"))
@@ -160,7 +179,7 @@
       (t (smie-rule-separator kind))
       ))
     (`(:after . ":=") sample-indent-basic)
-    (`(:before . ,(or `"begin" `"(" `"{"))
+    (`(:before . ,(or `"begin" `"(" `"{" `"class-{"))
      (cond
       ;;((smie-rule-parent-p "if") 0)
       ((smie-rule-bolp)
@@ -172,6 +191,7 @@
     ;; (`(:after . "if") (smie-rule-parent))
     (`(:after . "if") 0)
     (`(:after . "{") sample-indent-basic);; "{" is neither
+    (`(:after . "class-{") sample-indent-basic);; "{" is neither
     ;; (`(:after . "}elseif") sample-indent-basic)
     ;; (`(:after . "}else") sample-indent-basic)
     (`(:before . "else")
