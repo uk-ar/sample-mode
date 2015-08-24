@@ -52,7 +52,8 @@
     (goto-char (match-end 0))
     "elseif")
    ;; ((and (looking-at "{") (looking-back "class [^{]+"))
-   ;;  "class-{");;(forward-char 1)
+   ;;  (forward-char 1)
+   ;;  "class-{");;
     ;; (goto-char (match-end 0))
     ;; (if (looking-back "class [^{]+{")
     ;;     "class-{"
@@ -77,7 +78,8 @@
     (goto-char (match-beginning 0))
     "elseif")
    ;; ((and (looking-back "{") (looking-back "class [^{]+{"))
-   ;;  "class-{");;(backward-char 1)
+   ;;  (backward-char 1)
+   ;;  "class-{");;
     ;; ;;(goto-char (match-beginning 0))
     ;; (if
     ;;   "{"))
@@ -138,7 +140,7 @@
       ;;(class-body (class-id "class-{" insts "}"))
       ;;(class-body (id "{" insts "}"))
       ;;(class (id "class" id "{" insts "}" id))
-      (class-body (class-id "{" insts "}"))
+      ;;(class-body (class-id "{" insts "}"))
       (inst ;;("{" insts "}")
             ("begin" insts "end")
             (exp "?" exp ":" exp)
@@ -155,8 +157,9 @@
             ;; ("class" id "then" insts "end")
             ;; ("class" id ":" ids "then" insts "end")
 
-            ("class" class-id "{" insts "}")
-            ("class" class-id "then" insts "end")
+            ;;("class" class-id "{" insts "}")
+            ;;("class" class-id "class-{" insts "}")
+            ;;("class" class-id "then" insts "end")
             ;; (setq smie-blink-matching-inners nil)
             ;;("class" class-body) ;; ng for backward-sexp
             ;;("class" class-id "then" insts "end")
