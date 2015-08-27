@@ -16,7 +16,7 @@
   "Syntax table for `sample-mode'.")
 
 (defvar sample-keywords-regexp
-  (regexp-opt '("+" "*" "," ";" ">" ">=" "<" "<=" ":=" "=" "if" "then" "begin" "end" "class" ":" "else" "?" "{" "}")))
+  (regexp-opt '("+" "*" "," ";" ">" ">=" "<" "<=" ":=" "=" "if" "then" "begin" "end" "class" ":" "?" "else" "{" "}")));;
 ;;"else"
 (defvar sample-font-lock-keywords
   `(,sample-keywords-regexp
@@ -48,9 +48,9 @@
 (defun sample-smie-forward-token ()
   (forward-comment (point-max))
   (cond
-   ((looking-at "else if");;}[ \t\n]*
+   ((looking-at "} else if");;}[ \t\n]*
     (goto-char (match-end 0))
-    "elseif")
+    "}elseif")
    ;; ((and (looking-at "{") (looking-back "class [^{]+"))
    ;;  (forward-char 1)
    ;;  "class-{");;
@@ -58,9 +58,9 @@
     ;; (if (looking-back "class [^{]+{")
     ;;     "class-{"
     ;;     "{"))
-   ((looking-at "else")
+   ((looking-at "} else")
     (goto-char (match-end 0))
-    "else")
+    "}else")
    ((looking-at sample-keywords-regexp)
     (goto-char (match-end 0))
     (match-string-no-properties 0))
@@ -68,24 +68,25 @@
        (point)
        (progn (skip-syntax-forward "w_")
               (point))))))
+;;(setq smie-blink-matching-inners nil)
 
 ;; (funcall smie-forward-token-function)
 ;; (funcall smie-backward-token-function)
 (defun sample-smie-backward-token ()
   (forward-comment (- (point)))
   (cond
-   ((looking-back "else if")
+   ((looking-back "} else if")
     (goto-char (match-beginning 0))
-    "elseif")
+    "}elseif")
    ;; ((and (looking-back "{") (looking-back "class [^{]+{"))
    ;;  (backward-char 1)
    ;;  "class-{");;
     ;; ;;(goto-char (match-beginning 0))
     ;; (if
     ;;   "{"))
-   ((looking-back "else")
+   ((looking-back "} else")
     (goto-char (match-beginning 0))
-    "else")
+    "}else")
    ((looking-back sample-keywords-regexp (- (point) 2) t)
     (goto-char (match-beginning 0))
     (match-string-no-properties 0))
@@ -134,9 +135,54 @@
       ;; (ielsei (itheni "else" "{" insts "}"))
       ;; (ielseifi (ielseifi "elseif" ielseifi)
       ;;           (itheni))
-      ;; (if-body (itheni)
-      ;;          (ielsei)
-      ;;          (ielseifi "elseif" if-body))
+      ;; (if-body ("if" itheni);; ng for move sexp
+      ;;          ;;("if" ielsei)
+      ;;          ;;("if" ielseifi "elseif" if-body)
+      ;;          )
+      ;; (if-body (exp "{" insts "}");;("{" insts "}")
+      ;;          )
+      ;; (if-body (exp "{" insts "}"))
+      ;; (if-bodys (if-bodys "elseif" if-bodys)
+      ;;           (if-body))
+      (if-body (exp "{" insts))
+      (if-bodys (if-bodys "}elseif" if-bodys)
+                ;;(if-bodys "}else" if-bodys)
+                (if-bodys "}else" "{" insts)
+                (if-body))
+
+      ;; ;;(block ("{" insts "}"))
+      ;; ;;(id-block (id "{" insts "}"))
+      ;; ;;(if ("if" id "{" insts "}"))
+      ;; (if-clause;; error only if {};
+      ;;  ("if" exp "{" insts "}")
+      ;;  ("if" if-bodys "}elseif" exp "{" insts "}")
+      ;; )
+
+      (if-clause ;;("if" id "{" insts "}")
+       ;;("if" exp "{" insts "}")
+       ;;("if" if-body "else" "{" insts "}");; error on if-} and wrong level
+       ;;("if" exp "{" insts "}")
+       ;; ("if" if-clause);; ng for backward-sexp
+       ;; ("if" if-bodys "}else" "{" insts "}")
+       ("if" if-bodys "}")
+       ;;("if" if-bodys "}")
+       ;;(if-clause "}elseif" exp "{" insts "}")
+       ;;("}elseif" exp "{" insts "}")
+       ;;("if" if-bodys "}elseif" exp "{" insts "}")
+       ;;("if" exp "{" insts "}elseif" exp "{" insts "}")
+       ;;("if" exp "{" insts "}" "else" "{" insts "}");; error on if
+       ;;("if" exp "{" insts "}" "else" "{" insts "}");; error on if
+       ;;("if" exp "{" insts "} else" "{" insts "}");; no error
+               ;;("if" id "{" insts "}")
+               ;;("if" id-block "elese" id-block)
+               ;;(if-body "else" id-block)
+               );; ok for else
+      ;;(if-body ("if" exp "{" insts "}"))
+      ;; (if-clause (if-body);; error on else }
+      ;;            (if-body "elseif" exp "{" insts "}")
+      ;;            (if-body "else" "{" insts "}")
+      ;;            )
+
       ;;(class-body (class-id "class-{" insts "}"))
       ;;(class-body (id "{" insts "}"))
       ;;(class (id "class" id "{" insts "}" id))
@@ -149,6 +195,7 @@
             ;;    (`(:after . ,(or "?" ":")) ruby-indent-level)
             ;;("if" if-body "}")
             ;;("if" if-body)
+            (if-clause)
             ;;("class" id "{" insts "}")
             ;;(inst "class" insts)
             ;;("class" class-id "class-{" insts "}")
@@ -188,7 +235,9 @@
       ;;            (if-body "else" "{" insts "}"))
       )
     '((assoc "elseif"))
-    '((assoc "then") (assoc "{") (left ","))
+    ;;'((assoc "}elseif"))
+    ;;'((assoc "}else"))
+    '((assoc "if") (assoc "then") (assoc "{") (assoc "}elseif") (left ","))
     ;;'((assoc "}else{"))
     ;;'((assoc "}") (assoc "else"))
     ;;'((assoc "if") (assoc "else") (assoc "elseif"))
