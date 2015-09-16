@@ -140,6 +140,7 @@
            ("{" insts "}")
            ("(" exps ")"))
       (exps (exps "," exp)
+            (id ":" exp)
             (exp))
       )
     '((assoc "elseif"))
@@ -147,12 +148,18 @@
     '((assoc ";"))
     '((assoc "+") (assoc "*")))))
 
+(setq offset 2)
 (defun sample-smie-rules (kind token)
   (pcase (cons kind token)
     (`(:elem . basic) sample-indent-basic)
     ;;(`(,_ . ",") (smie-rule-separator kind))
     ;;(`(:after . ",") (smie-rule-parent))
     ;;(`(:before . ",") (smie-rule-parent))
+    ;; (`(:after . ",")
+    ;;  ;; after :
+    ;;  (when offset
+    ;;    (smie-rule-parent offset)
+    ;;    ))
     (`(:after . ":=") sample-indent-basic)
     (`(:before . ,(or `"begin" `"(" `"{"))
      (if (smie-rule-hanging-p) (smie-rule-parent)))
