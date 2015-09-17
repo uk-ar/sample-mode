@@ -131,16 +131,16 @@
             ("begin" insts "end")
             ;;(exp "?" exp ":" exp)
             ;;(id ":=" exp)
-            ;;("class" id ":" exps)
-            ("class" exps)
+            ("class" id ":" exps)
+            ;;("class" exps);; cannot backword token
             (exp))
       (insts (insts ";" insts) (inst))
       (exp (exp "+" exp)
            (exp "*" exp)
            ("{" insts "}")
            ("(" exps ")"))
-      (exps (exps "," exp)
-            (id ":" exp)
+      (exps ;;(id ":" exp)
+            (exps "," exp)
             (exp))
       )
     '((assoc "elseif"))
@@ -160,23 +160,50 @@
     ;;  (when offset
     ;;    (smie-rule-parent offset)
     ;;    ))
+    ;;(`(:list-intro . ",") 0)
+    ;;(`(:after . ":") (smie-rule-parent))
+    (`(:after . ":") 0)
+    (`(:before . ":")
+     (backward-sexp 1)
+     ;; or
+     ;;(smie-backward-sexp 'halfsexp)
+     ;;(smie-rule-parent)
+     (cons 'column (current-column))
+     )
+    (`(:before . "{") ;;(smie-rule-parent)
+     ;;(smie-backward-sexp 'halfsexp)
+     (when (smie-rule-parent-p ",")
+       (smie-backward-sexp ",")
+       ;; (smie-rule-parent)
+       ;; or
+       (backward-sexp 1);;go to class
+       (cons 'column (current-column))))
+    (`(:after . ",") (smie-rule-parent))
+    (`(:before . ",") (smie-rule-parent))
     (`(:after . ":=") sample-indent-basic)
     (`(:before . ,(or `"begin" `"(" `"{"))
      (if (smie-rule-hanging-p) (smie-rule-parent)))
     (`(:before . "if")
      (and (not (smie-rule-bolp)) (smie-rule-prev-p "else")
         (smie-rule-parent)))))
-
+;;(smie-indent-backward-token)
+;;(smie-backward-sexp 'halfsexp)
 (defun verbose-sample-smie-rules (kind token)
-  (let ((value (sample-smie-rules kind token)))
-    (message "%s '%s'; sib-p:%s parent:%s bolp:%s hang:%s == %s" kind token
-             (ignore-errors (smie-rule-sibling-p))
-             (ignore-errors smie--parent)
-             ;;(ignore-errors (smie-indent--parent))
-             (ignore-errors (smie-rule-bolp))
-             (ignore-errors (smie-rule-hanging-p))
+  (let
+      ((str (format "sib-p:%s parent:%s bolp:%s hang:%s"
+                    (ignore-errors (smie-rule-sibling-p))
+                    (ignore-errors smie--parent)
+                    ;;(ignore-errors (smie-indent--parent))
+                    (ignore-errors (smie-rule-bolp))
+                    (ignore-errors (smie-rule-hanging-p))))
+       (value (sample-smie-rules kind token)))
+    (message "%s '%s'; %s == %s"
+             kind token
+             str
              value)
-    value))
+    ;;(sample-smie-rules kind token)
+    value
+    ))
 
 ;; smie--parent
 ;; (LEFT-LEVEL POS TOKEN): we couldn't skip TOKEN because its right-level
